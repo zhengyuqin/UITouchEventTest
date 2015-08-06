@@ -1,0 +1,13 @@
+<com.zyq.uitoucheventtest.MyLinearLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+                                         android:id = "@+id/ly"
+                                         android:layout_width = "match_parent"
+                                         android:layout_height = "match_parent"
+                                         android:orientation = "vertical"
+                                         android:gravity = "center" >
+	<com.zyq.uitoucheventtest.MyButton
+			android:id = "@+id/btn"
+			android:layout_width = "100dp"
+			android:layout_height = "100dp"
+			android:text = "测试"
+			 />
+</com.zyq.uitoucheventtest.MyLinearLayout >
