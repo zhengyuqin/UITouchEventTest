@@ -81,10 +81,6 @@ public class MyLinearLayout extends LinearLayout {
 				break;
 			case MotionEvent.ACTION_UP:
 				Log.d(TAG, "onTouchEvent()-->ACTION_UP");
-//				setFocusable(true);
-//				setFocusableInTouchMode(true);
-//				setClickable(false);
-//				setLongClickable(false);
 				break;
 			case MotionEvent.ACTION_CANCEL:
 				Log.d(TAG, "onTouchEvent()-->ACTION_DOWN");
