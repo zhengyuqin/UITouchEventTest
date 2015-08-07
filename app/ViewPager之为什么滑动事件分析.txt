@@ -69,17 +69,19 @@ public boolean canScrollHorizontally(int direction) {
         }
     }
 
-
+填充view,可以理解为在显示当前item时候,会在缓存列表中缓存至少一个左右item,至少是多少,我们可以自己设置,离显示item的偏移量
 void populate(int newCurrentItem) {
         ItemInfo oldCurInfo = null;
         int focusDirection = View.FOCUS_FORWARD;
         if (mCurItem != newCurrentItem) {
             focusDirection = mCurItem < newCurrentItem ? View.FOCUS_RIGHT : View.FOCUS_LEFT;
+            //找到旧item,方便计算当前item 跟 oldItem的偏移量
             oldCurInfo = infoForPosition(mCurItem);
             mCurItem = newCurrentItem;
         }
 
         if (mAdapter == null) {
+            //缓存所有child,然后按一定的优先级排列
             sortChildDrawingOrder();
             return;
         }
@@ -101,6 +103,7 @@ void populate(int newCurrentItem) {
             return;
         }
 
+        //数据要发生变化,要开始更新了
         mAdapter.startUpdate(this);
 
         final int pageLimit = mOffscreenPageLimit;//默认是1,
@@ -108,6 +111,7 @@ void populate(int newCurrentItem) {
         final int N = mAdapter.getCount();
         final int endPos = Math.min(N-1, mCurItem + pageLimit);
 
+        //假设adapter.getCount发生了变化,抛出异常.
         if (N != mExpectedAdapterCount) {
             String resName;
             try {
@@ -124,6 +128,7 @@ void populate(int newCurrentItem) {
         }
 
         // Locate the currently focused item or add it if needed.
+        // 找到currItem在缓存列表中的排列的位置.
         int curIndex = -1;
         ItemInfo curItem = null;
         for (curIndex = 0; curIndex < mItems.size(); curIndex++) {
@@ -133,10 +138,24 @@ void populate(int newCurrentItem) {
                 break;
             }
         }
-
+        //若在缓存列表中找不到这个currItem,添加一个,addNewItem主要调用mAdapter.instantiateItem(),
+        //而这个方法也是我们PageAdapter,FragmentAdapter,FragmentStateAdapter要有相对应的处理逻辑
+        //这样我们取到当前currItem 在当前缓存列表中的位置 curIndex.
         if (curItem == null && N > 0) {
             curItem = addNewItem(mCurItem, curIndex);//保证了在mItems.size()中位置curIndex 就是curItem,
         }
+
+
+        // 接下来整个缓存列表的核心,就是说ViewPager是怎么做到在滑动时候左右两边是加载好的
+        // 拿左侧举例,默认先缓存一个左侧的嘛,那么就要确保当前curItem 在缓存列表的前一个也是
+        // 左侧的那一个,接下来删掉离curItem 偏移量较远的item, 怎样才是偏移量较远的呢,我们可以
+        // 自己定义,  if (extraWidthLeft >= leftWidthNeeded && pos < startPos)
+        // leftWithNeeded = 1, 所以我们偏移量 >=1 , 考虑一种特殊情况 curItem.position = 0;
+        // 那么就左侧是没有删的了.
+        // 右侧也是一样.
+        // 最后,还有一个重要的工作,计算离curItem的偏移量,只要在缓存列表中的item都要计算偏移量.
+
+
 
         // Fill 3x the available width or up to the number of offscreen
         // pages requested to either side, whichever is larger.
@@ -219,8 +238,13 @@ void populate(int newCurrentItem) {
             }
         }
 
+
+        // primary : 主要的,就是我们当前curItem,所以我们要实现一些特殊的功能,首先要
+        // super.setPrimaryItem();
         mAdapter.setPrimaryItem(this, mCurItem, curItem != null ? curItem.object : null);
 
+
+        // 表示所有child的操作都已经完成.
         mAdapter.finishUpdate(this);
 
         // Check width measurement of current pages and drawing sort order.
@@ -241,6 +265,8 @@ void populate(int newCurrentItem) {
         }
         sortChildDrawingOrder();
 
+        // 查看是否有 focus ,可能是viewPager本身,也可能是child
+        // 若child有focus
         if (hasFocus()) {
             View currentFocused = findFocus();
             ItemInfo ii = currentFocused != null ? infoForAnyChild(currentFocused) : null;
@@ -256,4 +282,68 @@ void populate(int newCurrentItem) {
                 }
             }
         }
+    }
+
+
+private void completeScroll(boolean postEvents) {
+        boolean needPopulate = mScrollState == SCROLL_STATE_SETTLING;
+        if (needPopulate) {
+            // Done with scroll, no longer want to cache view drawing.
+            setScrollingCacheEnabled(false);
+            mScroller.abortAnimation();
+            int oldX = getScrollX();
+            int oldY = getScrollY();
+            int x = mScroller.getCurrX();
+            int y = mScroller.getCurrY();
+            if (oldX != x || oldY != y) {
+                scrollTo(x, y);
+                if (x != oldX) {
+                    pageScrolled(x);
+                }
+            }
+        }
+        mPopulatePending = false;
+        for (int i=0; i<mItems.size(); i++) {
+            ItemInfo ii = mItems.get(i);
+            if (ii.scrolling) {
+                needPopulate = true;
+                ii.scrolling = false;
+            }
+        }
+        if (needPopulate) {
+            if (postEvents) {
+                ViewCompat.postOnAnimation(this, mEndScrollRunnable);
+            } else {
+                mEndScrollRunnable.run();
+            }
+        }
+    }
+
+private boolean pageScrolled(int xpos) {
+        if (mItems.size() == 0) {
+            mCalledSuper = false;
+            onPageScrolled(0, 0, 0);
+            if (!mCalledSuper) {
+                throw new IllegalStateException(
+                        "onPageScrolled did not call superclass implementation");
+            }
+            return false;
+        }
+        final ItemInfo ii = infoForCurrentScrollPosition();
+        final int width = getClientWidth();
+        final int widthWithMargin = width + mPageMargin;
+        final float marginOffset = (float) mPageMargin / width;
+        final int currentPage = ii.position;
+        //pageOffset = [-1,1]
+        final float pageOffset = (((float) xpos / width) - ii.offset) /
+                (ii.widthFactor + marginOffset);
+        final int offsetPixels = (int) (pageOffset * widthWithMargin);
+
+        mCalledSuper = false;
+        onPageScrolled(currentPage, pageOffset, offsetPixels);
+        if (!mCalledSuper) {
+            throw new IllegalStateException(
+                    "onPageScrolled did not call superclass implementation");
+        }
+        return true;
     }
