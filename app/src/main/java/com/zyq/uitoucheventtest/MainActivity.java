@@ -1,6 +1,8 @@
 package com.zyq.uitoucheventtest;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -18,6 +20,8 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 	private MyLinearLayout mLayout;
 	private ScrollView mScrollView;
 	private ViewPager mViewPager;
+	private FragmentStatePagerAdapter mFragmentStatePagerAdapter;
+	private FragmentPagerAdapter mFragmentPagerAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
