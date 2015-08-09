@@ -1,6 +1,7 @@
 package com.zyq.uitoucheventtest;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,6 +23,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 	private ViewPager mViewPager;
 	private FragmentStatePagerAdapter mFragmentStatePagerAdapter;
 	private FragmentPagerAdapter mFragmentPagerAdapter;
+	private FragmentManager fm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +31,6 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 		setContentView(R.layout.activity_main);
 		mBtn = (MyButton) findViewById(R.id.btn);
 		mLayout = (MyLinearLayout) findViewById(R.id.ly);
-
 		//mLayout.setFocusable(true);
 		//mLayout.setFocusableInTouchMode(true);
 //		mLayout.setClickable(false);

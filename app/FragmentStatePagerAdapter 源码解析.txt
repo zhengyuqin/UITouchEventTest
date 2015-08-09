@@ -1,4 +1,18 @@
-FragmentStatePagerAdapter.java
+FragmentStatePagerAdapter.java  VS FragmentPagerAdapter.java
 
 restoreState(Parcelable state,ClassLoader loader)
-注释:
+注释:从state取出keySet,然后轮训keySet，从fragmentManager找到对应的fragment.
+restoreState(Parcelable state,ClassLoader loader)
+注释：空实现。
+
+instantiateItem(ViewGroup container,int position)
+注释：
+
+
+FragmentManager:
+saveFragmentInstanceState(Fragment fragment)
+注释：调用fragment.saveFragmentBasicState()
+     fragment.saveFragmentBasicState()
+        fragment.onSaveInstanceState() 是不是很熟悉呢
+            //但别忘了，若这个fragment还有孩子呢，也要保存他们的状态么
+            fragment.
