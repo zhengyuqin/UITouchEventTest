@@ -4,6 +4,11 @@ buildscript {
 	repositories {
 		jcenter()
 	}
+
+	repositories.each {
+		println it.getUrl()
+	}
+
 	dependencies {
 		classpath 'com.android.tools.build:gradle:1.2.2'
 

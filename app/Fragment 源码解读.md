@@ -1,80 +1,131 @@
-FragmentÖØÒª·½·¨½â¶Á£º
-========
-*fragmentÉúÃüÖÜÆÚ»á¾­ÀúÒÔÏÂ¼¸¸ö×´Ì¬£º
-    INITIALIZING      //not yet created
-    CREATED           //created
-    ACTIVITY_CREATED  //the activity has finished its creation
-    STOPPED           //created ,but not started
-    STARTED           //created and started ,but not resumed
-    RESUMED           //created ,started and resumed
+*fragmentç”Ÿå‘½å‘¨æœŸä¼šç»å†ä»¥ä¸‹å‡ ä¸ªçŠ¶æ€ï¼š INITIALIZING //not yet created CREATED //created ACTIVITY_CREATED //the activity has finished its creation STOPPED //created ,but not started STARTED //created and started ,but not resumed RESUMED //created ,started and resumed
 
-*isInBackStack():ÊÇ·ñÔÚfragmentManagerµÄºóÍËÕ»ÖĞ
-*setRetainInstance(boolean retain):Èç¹ûretain=true&&mParentFragment!=null,ÊÇ²»ÄÜÉèÖÃÕâ¸ö
-*isFromLayout():true show that this fragment inflated from layout
-*isInLayout():
+*isInBackStack():æ˜¯å¦åœ¨fragmentManagerçš„åé€€æ ˆä¸­ *setRetainInstance(boolean retain):å¦‚æœretain=true&&mParentFragment!=null,æ˜¯ä¸èƒ½è®¾ç½®è¿™ä¸ª *isFromLayout():true show that this fragment inflated from layout *isInLayout():
 
+onCreate(@Nullable Bundle savedInstanceState) æ³¨é‡Šï¼šè¿™ä¸ªæ–¹æ³•åœ¨activityçš„onCreateçš„è¿›è¡Œä¹ŸåŒæ ·è¿›è¡Œï¼Œæ‰€ä»¥ï¼Œæˆ‘ä»¬ä¸èƒ½ä¾èµ–äºactivityçš„æ­£åœ¨åˆå§‹åŒ–çš„å†…å®¹è§†å›¾ï¼Œ æˆ‘ä»¬å¯ä»¥åœ¨onActivityCreated()è¿™ä¸ªæ–¹æ³•è¿›è¡Œå¤„ç†
 
-onCreate(@Nullable Bundle savedInstanceState)
-×¢ÊÍ£ºÕâ¸ö·½·¨ÔÚactivityµÄonCreateµÄ½øĞĞÒ²Í¬Ñù½øĞĞ£¬ËùÒÔ£¬ÎÒÃÇ²»ÄÜÒÀÀµÓÚactivityµÄÕıÔÚ³õÊ¼»¯µÄÄÚÈİÊÓÍ¼£¬
-     ÎÒÃÇ¿ÉÒÔÔÚonActivityCreated()Õâ¸ö·½·¨½øĞĞ´¦Àí
+onViewCreated() æ³¨é‡Šï¼šè¿™ä¸ªæ–¹æ³•åœ¨onCreateView()ä¹‹åç«‹å³æ‰§è¡Œï¼Œåœ¨onViewRestoreState()ä¹‹å‰ï¼Œ The fragment's view hierarchy is not however attached to its parent at this point. è¿™å¥è¯æ„æ€è¯´è¿™ä¸ªfragmentçš„è§†å›¾å±‚æ¬¡è¿˜æ²¡æœ‰æ·»åŠ åˆ°ä»–çš„parentä¸Šï¼Œè¿™ä¸ªå°±å¥½åƒæˆ‘ä»¬åœ¨å†™adapter.getView(), inflate()æˆ‘ä»¬å¸¸ç”¨falseã€‚
 
-onViewCreated()
-×¢ÊÍ£ºÕâ¸ö·½·¨ÔÚonCreateView()Ö®ºóÁ¢¼´Ö´ĞĞ£¬ÔÚonViewRestoreState()Ö®Ç°£¬
-     The fragment's view hierarchy is not however attached to its parent at this point.
-     Õâ¾ä»°ÒâË¼ËµÕâ¸öfragmentµÄÊÓÍ¼²ã´Î»¹Ã»ÓĞÌí¼Óµ½ËûµÄparentÉÏ£¬Õâ¸ö¾ÍºÃÏñÎÒÃÇÔÚĞ´adapter.getView(),
-     inflate()ÎÒÃÇ³£ÓÃfalse¡£
+onActivityCreated() æ³¨é‡Šï¼šåœ¨activity.createdæˆåŠŸåï¼Œä¼šå›è°ƒè¿™ä¸ªæ–¹æ³•ï¼Œæˆ‘ä»¬æœ‰æ—¶ä¼šè°ƒç”¨fragment.setRetainInstance()è¿™ä¸ªæ–¹æ³•ä¹ˆï¼Œ è¿™ä¸ªæ–¹æ³•å°±æ˜¯ä¿å­˜äº†fragmentçš„äº‹ä¾‹ï¼Œå³ä½¿è¿™ä¸ªfragment detachFromActivityä¹Ÿæ˜¯å­˜åœ¨çš„ï¼Œé‚£ä¹ˆåªæœ‰åœ¨è¿™ä¸ª æ–¹æ³•å›è°ƒåï¼Œè¡¨ç¤ºè¿™ä¸ªactivityå·²ç»createdäº†ï¼Œæˆ‘ä»¬å°±å¯ä»¥æ¢å¤ä¹‹å‰çš„fragmentå®ä¾‹ã€‚
 
-onActivityCreated()
-×¢ÊÍ£ºÔÚactivity.created³É¹¦ºó£¬»á»Øµ÷Õâ¸ö·½·¨£¬ÎÒÃÇÓĞÊ±»áµ÷ÓÃfragment.setRetainInstance()Õâ¸ö·½·¨Ã´£¬
-     Õâ¸ö·½·¨¾ÍÊÇ±£´æÁËfragmentµÄÊÂÀı£¬¼´Ê¹Õâ¸öfragment detachFromActivityÒ²ÊÇ´æÔÚµÄ£¬ÄÇÃ´Ö»ÓĞÔÚÕâ¸ö
-     ·½·¨»Øµ÷ºó£¬±íÊ¾Õâ¸öactivityÒÑ¾­createdÁË£¬ÎÒÃÇ¾Í¿ÉÒÔ»Ö¸´Ö®Ç°µÄfragmentÊµÀı¡£
+onViewStateRestored() æ³¨é‡Šï¼šä¸¾ä¸ªä¾‹å­å§,æ§ä»¶checkbutton,æˆ‘ä»¬å¸Œæœ›é‡æ–°è¿›æ¥ç•Œé¢æ—¶å€™ï¼Œä¿æŒä¹‹å‰çš„çŠ¶æ€ï¼Œé‚£æˆ‘ä»¬å¯ä»¥åœ¨è¿™ä¸ªåœ°æ–¹æ¢å¤buttonçŠ¶æ€
 
-onViewStateRestored()
-×¢ÊÍ£º¾Ù¸öÀı×Ó°É,¿Ø¼şcheckbutton,ÎÒÃÇÏ£ÍûÖØĞÂ½øÀ´½çÃæÊ±ºò£¬±£³ÖÖ®Ç°µÄ×´Ì¬£¬ÄÇÎÒÃÇ¿ÉÒÔÔÚÕâ¸öµØ·½»Ö¸´button×´Ì¬
+isAdded() æ³¨é‡Šï¼šè¡¨ç¤ºè¿™ä¸ªfragmentæ˜¯å¦æ·»åŠ åˆ°activity
 
+isDetached() æ³¨é‡Šï¼šè¡¨ç¤ºè¿™ä¸ªfragmentæ˜¯å¦è„±ç¦»äº†UI
 
-isAdded()
-×¢ÊÍ£º±íÊ¾Õâ¸öfragmentÊÇ·ñÌí¼Óµ½activity
+isRemoving() æ³¨é‡Šï¼šè¡¨ç¤ºè¿™ä¸ªfragmentæ˜¯å¦æ­£åœ¨ä»activityè„±ç¦»
 
-isDetached()
-×¢ÊÍ£º±íÊ¾Õâ¸öfragmentÊÇ·ñÍÑÀëÁËUI
-
-isRemoving()
-×¢ÊÍ£º±íÊ¾Õâ¸öfragmentÊÇ·ñÕıÔÚ´ÓactivityÍÑÀë
-
-isResumed()
-×¢ÊÍ£ºÈô¸Ãfragment ÔÚonResume()ºÍonPause()Ö®¼ä¾ÍÊÇtrue
-
+isResumed() æ³¨é‡Šï¼šè‹¥è¯¥fragment åœ¨onResume()å’ŒonPause()ä¹‹é—´å°±æ˜¯true
 
 FragmentManager:
-FragmentTransaction beginTransaction()
-×¢ÊÍ£ºfragmentTransactionµÄ´´½¨ºÍÌá½»Ö»ÄÜÔÚactivity±£´æ×´Ì¬Ö®Ç°£¬ÒòÎªapplicationÏ£Íû±£´æfragmentµÄ×´Ì¬¡£
 
-executePendingTransactions
-×¢ÊÍ£ºfragmentTransaction±¾ÉíÊÇÔÚÔÚÖ÷Ïß³ÌÒì²½Ö´ĞĞµÄ£¬ÈôÏëÁ¢¼´Ö´ĞĞ£¬ÎÒÃÇ¿ÉÒÔµ÷ÓÃÕâ¸ö·½·¨ÂíÉÏÖ´ĞĞ¡£
+FragmentTransaction beginTransaction() æ³¨é‡Šï¼šfragmentTransactionçš„åˆ›å»ºå’Œæäº¤åªèƒ½åœ¨activityä¿å­˜çŠ¶æ€ä¹‹å‰ï¼Œå› ä¸ºapplicationå¸Œæœ›ä¿å­˜fragmentçš„çŠ¶æ€ã€‚
 
-putFragment(Bundle bundle,String key,Fragment fragment)
-×¢ÊÍ£ºÎÒÃÇ¿ÉÒÔ°ÑfragmentµÄÒıÓÃ·Åµ½bundleÖĞ£¬ÕâÑùÎÒÃÇ¾Í±£´æÁËÕâ¸öfragmentµÄ×´Ì¬£¬ÎÒÃÇ¿ÉÒÔÍ¨¹ıgetFragmentÈ¡³öÀ´¡£
+executePendingTransactions æ³¨é‡Šï¼šfragmentTransactionæœ¬èº«æ˜¯åœ¨åœ¨ä¸»çº¿ç¨‹å¼‚æ­¥æ‰§è¡Œçš„ï¼Œè‹¥æƒ³ç«‹å³æ‰§è¡Œï¼Œæˆ‘ä»¬å¯ä»¥è°ƒç”¨è¿™ä¸ªæ–¹æ³•é©¬ä¸Šæ‰§è¡Œã€‚
 
-saveFragmentInstanceState(Fragment fragment)
-×¢ÊÍ£º±£´æfragmentµÄ×´Ì¬£¬ÎÒÃÇ¿ÉÒÔÔÚcreateĞÂµÄfragmentÊ±ºò»Ö¸´±¾ÉíµÄ×´Ì¬¡£
-     ÏŞÖÆÌõ¼ş£º(1)Õâ¸öfragment±ØĞëattach to fragmentManager
-             (2)ĞÂµÄfragment¸úÕâ¸öfragment±ØĞëÊÇÏàÍ¬ className;
-              (3)fragmentÕâ¸ö±£´æµÄ×´Ì¬²»ÄÜ°üÀ¨ÆäËûfragmentµÄÒıÓÃ£¬»¹ÓĞfragment'target,requestCode
+putFragment(Bundle bundle,String key,Fragment fragment) æ³¨é‡Šï¼šæˆ‘ä»¬å¯ä»¥æŠŠfragmentçš„å¼•ç”¨æ”¾åˆ°bundleä¸­ï¼Œè¿™æ ·æˆ‘ä»¬å°±ä¿å­˜äº†è¿™ä¸ªfragmentçš„çŠ¶æ€ï¼Œæˆ‘ä»¬å¯ä»¥é€šè¿‡getFragmentå–å‡ºæ¥ã€‚
 
-isDestroyed()
-×¢ÊÍ£ºµ±Activity.onDestory()µ÷ÓÃÊ±ºò£¬fragmentManagerÕâÊ±ºòÒÑ¾­ËÀµôÁË
+saveFragmentInstanceState(Fragment fragment) æ³¨é‡Šï¼šä¿å­˜fragmentçš„çŠ¶æ€ï¼Œæˆ‘ä»¬å¯ä»¥åœ¨createæ–°çš„fragmentæ—¶å€™æ¢å¤æœ¬èº«çš„çŠ¶æ€ã€‚ é™åˆ¶æ¡ä»¶ï¼š(1)è¿™ä¸ªfragmentå¿…é¡»attach to fragmentManager (2)æ–°çš„fragmentè·Ÿè¿™ä¸ªfragmentå¿…é¡»æ˜¯ç›¸åŒ className; (3)fragmentè¿™ä¸ªä¿å­˜çš„çŠ¶æ€ä¸èƒ½åŒ…æ‹¬å…¶ä»–fragmentçš„å¼•ç”¨ï¼Œè¿˜æœ‰fragment'target,requestCode
+
+isDestroyed() æ³¨é‡Šï¼šå½“Activity.onDestory()è°ƒç”¨æ—¶å€™ï¼ŒfragmentManagerè¿™æ—¶å€™å·²ç»æ­»æ‰äº†
+
+execPendingActions():æ³¨é‡Š:é©¬ä¸Šæäº¤ç­‰å¾…çš„äº‹åŠ¡,ä¸€å®šè¦æ‰§è¡Œåœ¨ä¸»çº¿ç¨‹.åŸç†,åŸå…ˆæœ‰ä¸ªæŒ‚èµ·çš„é˜Ÿåˆ—,å…ˆåœæ‰ä¸Šæ¬¡execPendingActions(),ç„¶åæ‰§è¡Œæ¯ä¸ªRunnable.åŒæ—¶,å¦‚æœæœ‰fragmentå»¶è¿ŸåŠ è½½startçŠ¶æ€,ç­‰äº‹åŠ¡ä¸åœ¨æ˜¯å¿™ç¢Œæ—¶å€™,å°±å¯ä»¥åŠ è½½fragmentçš„startæ–¹æ³•.
+
+setBackStackIndex(int index,backStackRecord bse):æ³¨é‡Š:è®¾ç½®åœ¨åé€€æ ˆä¸­æŸä¸ªåœ°æ–¹çš„è¿›å‡ºæ ˆè®°å½•.
+
+freeBackStackIndex(int index)æ³¨é‡Š:åªæ˜¯ä»åé€€æ ˆé˜Ÿåˆ—ä¸­æŠŠè®°å½•å‰”é™¤
+
+popBackStackState(Handle handle,String name, int id, int flags)
+æ³¨é‡Š:è¿™ä¸ªæ–¹æ³•å¾ˆé‡è¦,handle = mActivity.mHandler,name é»˜è®¤ä¸ºnull,id é»˜è®¤ä¸º-1,flags =0/1(POP_BACK_STACK_INCLUSIVE)
+    åˆ†ä»¥ä¸‹ä¸‰ç§æƒ…å†µåˆ†æ: name = null && id < 0 ,flags = 0,è¿™æ—¶å€™åªä¼šåˆ é™¤æœ€ä¸Šå±‚çš„fragment
+                     name = null || id < 0 ,flags = 1,è¿™æ—¶å€™ä¼šåˆ æ‰å…¨éƒ¨çš„fragment,
+                     name != null || id > 0 ,flags = 0,è¿™æ—¶å€™åªä¼šæŠŠç¬¬ä¸€ä¸ªæ‰¾åˆ°çš„æ”¾åˆ°fragmentPopé˜Ÿåˆ—ä¸­,
+                                             å‡è®¾è¿™æ—¶å€™æ‰¾åˆ°çš„fragmentåœ¨index = 3,total = 5,è¿™æ—¶å€™ä¼šå¼¹å‡º3,4,5.
+                                             flags = 1,è¿™æ—¶å€™ä¼šæŠŠæ¥ä¸‹æ¥çš„è¿ç»­framgentä¹Ÿæ·»åŠ è¿›æ¥,
+                                             å‡è®¾index = 2,3 ,å°±ä¼šå¼¹å‡º:2,3,4,5
+                                             è‹¥index = 1,3,é‚£è¿˜æ˜¯å¼¹å‡º3,4,5,å› ä¸º2æ‰¾ä¸åˆ°æ—¶å€™å·²ç»é€€å‡ºå¾ªç¯äº†.
+
+saveAllState()
+æ³¨é‡Š:ä¿å­˜æ‰€æœ‰çŠ¶æ€,åŒ…æ‹¬æ·»åŠ äº†å¤šå°‘,åé€€æ ˆä¸­active fragmentçš„çŠ¶æ€ä¿å­˜,è¿˜æœ‰æ¯ä¸ªfragmentçš„æ“ä½œè®°å½•.
+
+moveToState(Fragment f, int newState, int transit, int transitionStyle,boolean keepActive)
+æ³¨é‡Š:å¯¹fragmentçŠ¶æ€çš„åˆ‡æ¢,é¦–å…ˆæˆ‘ä»¬çŸ¥é“fragmentæœ‰å‡ ç§çŠ¶æ€:
+          INITIALIZING;
+          CREATED;
+          ACTIVITY_CREATED;
+          STOPPED;
+          STARTED;
+          RESUME;
+   1.(!f.mAdded || f.mDetched)&&(newState > Fragment.CREATED) newState = Fragment.CREATED;
+   2.(f.mRemoving && newState > f.state) newState = f.mState;
+   3.(f.mDeferStart && f.mState < Fragment.STARTED && newState > Fragment.STOPPED) newState = Fragment.STOPPED;
+   4.if(f.mState < newState) è§£ææ¥çœ‹æºç å¥½äº†,ä¸åšè®°å½•äº†.
+
+POP_BACK_STACK_INCLUSIVE æ³¨é‡Šï¼šè¡¨ç¤ºç›´åˆ°æ‰¾åˆ°æˆ‘ä»¬æƒ³è¦çš„æ ‡å¿—æ—¶å€™ï¼Œä¸ç„¶æ¸…æ‰æ•´ä¸ªbackStack;
+
+Loaderå‡ ç§ç”Ÿå‘½çŠ¶æ€ï¼š boolean started; boolean abandoned; boolean reset; boolean contentChanged; boolean processingChange;
 
 
+æ€è€ƒactivityæ˜¯æ€ä¹ˆå¸®fragment ä¿å­˜çŠ¶æ€çš„:
 
-POP_BACK_STACK_INCLUSIVE
-×¢ÊÍ£º±íÊ¾Ö±µ½ÕÒµ½ÎÒÃÇÏëÒªµÄ±êÖ¾Ê±ºò£¬²»È»ÇåµôÕû¸öbackStack;
+çœ‹çœ‹activity.onSaveInstanceStateåšäº†ä»€ä¹ˆ:
+protected void onSaveInstanceState(Bundle outState) {
+        outState.putBundle(WINDOW_HIERARCHY_TAG, mWindow.saveHierarchyState());
+        Parcelable p = mFragments.saveAllState();
+        if (p != null) {
+            outState.putParcelable(FRAGMENTS_TAG, p);
+        }
+        getApplication().dispatchActivitySaveInstanceState(this, outState);
+    }
+æ³¨æ„:mWindow.saveHierarchyState(),mFragment.saveAllState();
 
-Loader¼¸ÖÖÉúÃü×´Ì¬£º
-boolean started;
-boolean abandoned;
-boolean reset;
-boolean contentChanged;
-boolean processingChange;
+åŒç†æˆ‘ä»¬å¯ä»¥å»äº†è§£activity.onRestoreInstanceState();
+
+å…ˆçœ‹ä»¥ä¸‹ä¸‰ä¸ªæ–¹æ³•:
+saveFragmentViewState():
+ä¿å­˜fragmentçš„viewçŠ¶æ€çš„,ä¸¾ä¸ªä¾‹å­:
+å‡è®¾æˆ‘ä»¬æœ‰ä¸ªViewPager,é‡Œé¢æœ‰4ä¸ªfragment,æ¯ä¸ªfragmentéƒ½æœ‰listView,ä¸ºä»€ä¹ˆæˆ‘ä»¬å¯ä»¥åœ¨viewPageråˆ‡æ¢fragmentæ—¶å€™,listViewè¿˜ä¿æŒå½“æ—¶çš„ä½ç½®å‘¢
+     å°±æ˜¯androidæä¾›äº†Viewçš„ä¿å­˜çŠ¶æ€æ•°,å¯ä»¥ä»è¿™é‡Œæ¢å¤,é‚£ä¿å­˜å’Œæ¢å¤çš„æºç åœ¨å“ªå‘¢,è‚¯å®šå°±æ˜¯activityçš„onSaveInstanceState()å’Œ
+     onRestoreInstanceState()
+
+çœ‹mWindow.saveHierarchyState()æºç å°±çŸ¥é“æ€ä¹ˆä¿å­˜viewçŠ¶æ€æ ‘çš„
+ç®€å•æ€»ç»“ä¸€ä¸‹:activityåœ¨çŠ¶æ€éœ€è¦ä¿å­˜æ—¶å€™,ç›´æ¥newäº†ä¸€ä¸ªSpareArray,å»ºç«‹mViewId å’ŒParcelableçš„æ˜ å°„,å…¶ä¸­æ¯ä¸€ä¸ªviewéƒ½ä¼šä½¿ç”¨ä¸€ä¸ªParcelableæ¥åºåˆ—åŒ–
+           éœ€è¦ä¿å­˜ä¸‹æ¥çš„å†…å®¹,ViewGroupåœ¨ä¿å­˜è‡ªå·±çš„åŒæ—¶,ä¹Ÿä¼šè°ƒç”¨å­ç±»çš„ä¿å­˜çŠ¶æ€çš„æ–¹æ³•,å¹¶æŠŠä¸Šä¸‹ä¼ ä¸‹æ¥çš„SpareArrayä¸€ç›´ä¼ ä¸‹å»
 
 
+å…ˆçœ‹è¿™ä¸ªæ–¹æ³•åœ¨FragmentManagerå“ªå¤„è°ƒç”¨å…ˆ:
+1.åˆ‡æ¢Fragment çŠ¶æ€åˆ°ACTIVITY_CREATED:å°±æ˜¯activityåˆ›å»ºæˆåŠŸåä¼šé€šçŸ¥fragment
+2.saveFragmentBasicState() <-- saveFragmentInstanceState()(è¿™ä¸ªåœ¨FragmentStatePagerAdapter.destroyItemè°ƒç”¨)
+(saveFragmentBasicState():æ³¨é‡Š:ä¸ä»…ä¿å­˜fragmentæˆ‘ä»¬è¦å†™çš„onSaveInstanceState()è¿˜æœ‰viewçŠ¶æ€.)
+
+
+å»ºè®®çœ‹çœ‹FragmentManager.saveAllState()å’ŒrestoreAllStore()æ˜¯æ€æ ·åœ¨activityåœ¨ç‰¹æ®Šæƒ…å†µä¸‹æ¢å¤fragment;
+
+æƒŠè®¶çš„å‘ç°:åŸæ¥FragmentManager.saveAllState()åœ¨Activityçš„onSaveInstance()è°ƒç”¨
+         è€ŒFragmentManager.restoreAllStore()æ˜¯åœ¨Activityçš„onCreate()è°ƒç”¨çš„,è€Œä¸”ä½ åœ¨fragmentä¸èƒ½çœ‹åˆ°onRestoreInstance()çš„ç±»ä¼¼æ–¹æ³•.
+
+ protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (DEBUG_LIFECYCLE) Slog.v(TAG, "onCreate " + this + ": " + savedInstanceState);
+        if (mLastNonConfigurationInstances != null) {
+            mAllLoaderManagers = mLastNonConfigurationInstances.loaders;
+        }
+        if (mActivityInfo.parentActivityName != null) {
+            if (mActionBar == null) {
+                mEnableDefaultActionBarUp = true;
+            } else {
+                mActionBar.setDefaultDisplayHomeAsUpEnabled(true);
+            }
+        }
+        if (savedInstanceState != null) {
+            Parcelable p = savedInstanceState.getParcelable(FRAGMENTS_TAG);
+            mFragments.restoreAllState(p, mLastNonConfigurationInstances != null
+                    ? mLastNonConfigurationInstances.fragments : null);
+        }
+        mFragments.dispatchCreate();//æ˜¯åœ¨onCreateè°ƒç”¨çš„,å¯ä»¥ç»“åˆå®˜ç½‘çš„ç”Ÿå‘½å‘¨æœŸæ¥çœ‹
+        getApplication().dispatchActivityCreated(this, savedInstanceState);
+        if (mVoiceInteractor != null) {
+            mVoiceInteractor.attachActivity(this);
+        }
+        mCalled = true;
+    }

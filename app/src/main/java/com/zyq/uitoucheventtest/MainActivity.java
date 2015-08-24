@@ -1,16 +1,22 @@
 package com.zyq.uitoucheventtest;
 
+
+import android.content.Context;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ScrollView;
 
 
@@ -24,12 +30,28 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 	private FragmentStatePagerAdapter mFragmentStatePagerAdapter;
 	private FragmentPagerAdapter mFragmentPagerAdapter;
 	private FragmentManager fm;
+	private FragmentTransaction mFragmentTransaction;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mBtn = (MyButton) findViewById(R.id.btn);
+		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		WindowManager manager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		//lp.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+		lp.format = PixelFormat.RGBA_8888;
+		lp.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+		lp.gravity = 49;
+		lp.x = 0;
+		lp.y = 0;
+		lp.width = -1;
+		lp.height = -1;
+		View mFloatLayout = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+		manager.addView(mFloatLayout, lp);
+
+
+		/*mBtn = (MyButton) findViewById(R.id.btn);
 		mLayout = (MyLinearLayout) findViewById(R.id.ly);
 		//mLayout.setFocusable(true);
 		//mLayout.setFocusableInTouchMode(true);
@@ -89,9 +111,9 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
 			public void onClick(View v) {
 				Log.d("MyLinearLayout", "onClick()");
 			}
-		});
+		});*/
 
-		
+
 	}
 
 	@Override

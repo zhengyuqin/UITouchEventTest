@@ -6,8 +6,9 @@ restoreState(Parcelable state,ClassLoader loader)
 注释：空实现。
 
 instantiateItem(ViewGroup container,int position)
-注释：
-
+注释：由于FragmentStatePagerAdapter本身保存了SaveState,和List<Fragment>
+ Fragment fragment = getItem(position);
+ 如果取得到saveState,fragment.setInitialSavedState(FragmentState)
 
 FragmentManager:
 saveFragmentInstanceState(Fragment fragment)
@@ -15,4 +16,21 @@ saveFragmentInstanceState(Fragment fragment)
      fragment.saveFragmentBasicState()
         fragment.onSaveInstanceState() 是不是很熟悉呢
             //但别忘了，若这个fragment还有孩子呢，也要保存他们的状态么
-            fragment.
+反正就是收集该fragment的所有状态
+
+
+destroyItem()
+肯定由fm来解决啦,会调用FragmentManager.removeFragment()
+     fragment.mAdded = false;
+     fragment.mRemoving = true;
+     moveToState(fragment, inactive ? Fragment.INITIALIZING : Fragment.CREATED,
+                    transition, transitionStyle, false);
+     inactive是指这个fragment是否不在这个backStack中,
+          若不在这时候是初始化状态,若存在就是已经创建好的状态.
+     跳到moveToState()看看吧:
+          若是Fragment.INITIALIZING,onDestroy-->onDestroy;
+          若是Fragment.STARTED,先saveViewState(),然后destroyView(),由于是switch.case 没有break,还要往下
+             执行,onDestroy,onDetach
+
+finishUpdate:
+注释:这个方法一定要重写父类,不然是没办法让fragmentManager对fragment操作的......

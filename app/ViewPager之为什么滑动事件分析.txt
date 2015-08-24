@@ -39,6 +39,46 @@ static class ItemInfo{
    float offset;
 }
 
+setAdapter(PagerAdapter adapter):
+1.首先会销毁CacheList的items:
+            mAdapter.unregisterDataSetObserver(mObserver);
+            mAdapter.startUpdate(this);
+            for (int i = 0; i < mItems.size(); i++) {
+                final ItemInfo ii = mItems.get(i);
+                mAdapter.destroyItem(this, ii.position, ii.object);
+            }
+            mAdapter.finishUpdate(this);
+
+2.填充视图:populate(int newCurrentItem);
+           (1)计算要填充哪些视图,默认情况下填充视图前后1张;
+           mAdapter.startUpdate(this);
+           final int pageLimit = mOffscreenPageLimit;
+           final int startPos = Math.max(0, mCurItem - pageLimit);
+           final int N = mAdapter.getCount();
+           final int endPos = Math.min(N-1, mCurItem + pageLimit);
+           (2)在CacheList中找到newCurrentItem对应的位置,如果找不到重新addNewItem();
+           这里会调用我们熟悉的adapter.instantiateItem();
+           ItemInfo addNewItem(int position, int index) {
+                   ItemInfo ii = new ItemInfo();
+                   ii.position = position;
+                   ii.object = mAdapter.instantiateItem(this, position);
+                   ii.widthFactor = mAdapter.getPageWidth(position);
+                   if (index < 0 || index >= mItems.size()) {
+                       mItems.add(ii);
+                   } else {
+                       mItems.add(index, ii);
+                   }
+                   return ii;
+               }
+           (3)在CacheList中寻找前后view的位置,如果找不到,重新新建,并添加到CacheList中.
+              不仅如此,还要把CacheList中没用的View删掉,就会调用adapter.destroyItem();
+              最后,计算每一页的偏移量.
+           (4)显示当前currentItem;
+              mAdapter.setPrimaryItem(ViewGroup container, int position, Object object)
+           (5)若子view需要focus,会将focus传给child.
+
+
+
 //这个方法只会在populate()这个方法中调用.
 ItemInfo addNewItem(int position,int index){
    ItemInfo ii = new ItemInfo();
@@ -53,23 +93,16 @@ ItemInfo addNewItem(int position,int index){
    return ii;
 }
 
-public boolean canScrollHorizontally(int direction) {
-        if (mAdapter == null) {
-            return false;
-        }
+填充view,可以理解为在显示当前item时候,会在缓存列表中缓存至少一个左右item,至少是多少,我们可以自己设置,都每个item都有一个偏移量就是离屏幕左侧的一个偏移量
+填充过程肯定涉及到adapter的重写方法,首先会有
+       mAdapter.startUpdate();
+       mAdapter.instantiateItem(),初始化当前item和左右视图
+       mAdapter.destroyItem(),删除缓存列表中没用的item
 
-        final int width = getClientWidth();//getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
-        final int scrollX = getScrollX();
-        if (direction < 0) {
-            return (scrollX > (int) (width * mFirstOffset));
-        } else if (direction > 0) {
-            return (scrollX < (int) (width * mLastOffset));
-        } else {
-            return false;
-        }
-    }
+设置好左右视图后,这时候要显示当前视图
+      mAdapter.setPrimaryItem()
+      mAdapter.finishUpdate();
 
-填充view,可以理解为在显示当前item时候,会在缓存列表中缓存至少一个左右item,至少是多少,我们可以自己设置,离显示item的偏移量
 void populate(int newCurrentItem) {
         ItemInfo oldCurInfo = null;
         int focusDirection = View.FOCUS_FORWARD;
@@ -347,3 +380,128 @@ private boolean pageScrolled(int xpos) {
         }
         return true;
     }
+
+
+onInterceptTouchEvent(){}
+
+1.在MotionEvent.ACTION_CANCEL和MotionEvent.ACTION_UP是不拦截的.
+  if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+                // Release the drag.
+                if (DEBUG) Log.v(TAG, "Intercept done!");
+                mIsBeingDragged = false;
+                mIsUnableToDrag = false;
+                mActivePointerId = INVALID_POINTER;
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
+                }
+                return false;
+            }
+
+2.if (action != MotionEvent.ACTION_DOWN) {
+              if (mIsBeingDragged) {
+                  if (DEBUG) Log.v(TAG, "Intercept returning true!");
+                  return true;
+              }
+              if (mIsUnableToDrag) {
+                  if (DEBUG) Log.v(TAG, "Intercept returning false!");
+                  return false;
+              }
+          }
+    所以不要拦截有两种情况:1.mIsBeingDragged = false;
+                           2.mIsUnableToDrag = true;
+3.ACTION_MOVE:判断子view是否可以滑动.
+isGutterDrag(float x, float dx)
+注释:(x < mGutterSize && dx > 0) || (x > getWidth() - mGutterSize && dx < 0)
+canScroll(View v, boolean checkV, int dx, int x, int y)
+表示这个v的内部是否有可移动的,而且手指是在可移动范围内.
+        mIsUnableToDrag = true情况如下:
+        要么子view可以滑动,怎么判断是是可以滑动的,核心代码view.canScrollHorizontally:
+          public boolean canScrollHorizontally(int direction) {
+                  final int offset = computeHorizontalScrollOffset();//计算偏移量.
+                  final int range = computeHorizontalScrollRange() - computeHorizontalScrollExtent();
+                  if (range == 0) return false;
+                  if (direction < 0) {//右滑,这里的direction在外面已经做了取反
+                      return offset > 0;
+                  } else {
+                      return offset < range - 1;
+                  }
+              }
+
+        要么xDiff > mTouchSlop && xDiff * 0.5f > yDiff-->mIsBeingDragged = true,
+         if (xDiff > mTouchSlop && xDiff * 0.5f > yDiff) {
+                            if (DEBUG) Log.v(TAG, "Starting drag!");
+                            mIsBeingDragged = true;
+                            requestParentDisallowInterceptTouchEvent(true);
+                            setScrollState(SCROLL_STATE_DRAGGING);
+                            mLastMotionX = dx > 0 ? mInitialMotionX + mTouchSlop :
+                                    mInitialMotionX - mTouchSlop;
+                            mLastMotionY = y;
+                            setScrollingCacheEnabled(true);
+                        }
+         阻断parent拦截事件,同时把状态变为滚动状态.
+         调用performDrag();这里还处理极端向左和极端向右的状态.
+                view.scrollTo():
+                   public void scrollTo(int x, int y) {
+                           if (mScrollX != x || mScrollY != y) {
+                               int oldX = mScrollX;
+                               int oldY = mScrollY;
+                               mScrollX = x;
+                               mScrollY = y;
+                               invalidateParentCaches();
+                               onScrollChanged(mScrollX, mScrollY, oldX, oldY);//调用view自身的onScrollChanged()
+                               if (!awakenScrollBars()) {
+                                   postInvalidateOnAnimation();
+                               }
+                           }
+                       }
+                pageScrolled():
+                  infoForCurrentScrollPosition:解析为什么当前在哪个位置,为什么在onPageScrolled右滑时候arg0当前页的前一页
+                                                                                        左滑时候arg0还是当前页.
+                  onPageScrolled() --> dispatchPageScrolled();触发了我们onPageScrolled(arg0,偏移率,偏移量)
+                                                                   左滑:arg1 0-->1,偏移量:arg2 0-->屏幕宽度
+                                                                   右滑:arg1 1-->0,偏移量:arg2 屏幕宽度-->0
+
+
+4.ACTION_DOWN:
+  (1)一般情况,状态不会发生变化,所以三个重写方法没有一个调用
+  (2)会有一种中情况,我们已经ACTION_UP马上ACTION_DOWN,如果这时候已经出现SCROLL_STATE_SETTLING时候,但正常滚动过程还没停止,我们
+     应该设置这时的状态是DRAGGING
+
+5.ACTION_UP:这时候判断第二只手指.
+
+
+onTouchEvent()
+注释:down,move操作自己看源码去
+    重点说 up 操作
+    int nextPage = determineTargetPage(currentPage, pageOffset, initialVelocity,
+                   totalDelta);
+    setCurrentItemInternal(nextPage, true, true, initialVelocity);
+          final boolean dispatchSelected = mCurItem != item;//如果item没有发生变化.就不会触发onPageSelected()
+          populate(item);
+          scrollToItem(item, smoothScroll, velocity, dispatchSelected);
+               smoothScrollTo(destX, 0, velocity);//这里只可能是SCROLL_STATE_SETTLING,和SCROLL_STATE_IDIE这两种状态
+
+    为什么这么说,onPageSelected(不一定),onPageScrollStateChanged(一定)发生
+    onPageScrollStateChanged 发生条件:SCROLL_STATE_SETTLING,这
+    onPageSelected 发生条件: 界面确实发生了变化,才会发生变化.
+
+
+setAdapter()
+注释:如果在更新数据时候,不要重新用这个方法setAdapter(),因为会destory缓存队列中所有的item
+
+dataSetChanged()
+注释:我们直到PagerAdapter有两种模式
+           POSITION_UNCHANGED = 1;
+           POSITION_NONE = 2
+    这两个区别就是 2 会destroy item ,然后再populate 填充视图
+    mAdapter.getItemPosition() 就是跟这个有关啦.
+
+onSaveInstanceState()
+注释:记住当前的位置,会调用mAdapter.saveState()
+
+onRestoreInstanceState()
+注释:恢复当前的位置,会调用mAdapter.restoreState()
+                     setCurrentItem()
+
+

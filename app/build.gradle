@@ -1,32 +1,108 @@
 apply plugin: 'com.android.application'
 
+def manifestFile = android.sourceSets.main.manifest.srcFile
+def packageName = new XmlParser().parse(manifestFile).attribute('package')
+
 android {
 	compileSdkVersion 22
 	buildToolsVersion "22.0.1"
 
 	defaultConfig {
-		applicationId "com.zyq.uitoucheventtest"
+		applicationId "${packageName}"
 		minSdkVersion 11
 		targetSdkVersion 22
 		versionCode 1
 		versionName "1.0"
+
 	}
 	buildTypes {
 		release {
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
+		debug {
+			applicationIdSuffix '.debug'
+		}
+		alpha{
+
+		}
+		beta{
+
+		}
+
+//		productFlavors {
+//			pro {
+//				applicationId = "com.zyq.uitoucheventtest.pro"
+//			}
+//			free {
+//				applicationId = "com.zyq.uitoucheventtest.free"
+//			}
+//		}
+
 	}
 
-	lintOptions{
+	lintOptions {
 		abortOnError false
 		xmlReport false
-		check 'NewApi','InlinedApi'
+		check 'NewApi', 'InlinedApi'
 	}
+
+//这个功能是gradle生成的不同版本的APP,可以添加到同一台手机.
+//我们首先要改变包名嘛,但gradle的applicationId 会覆盖manifest的package,所以,我们可以添加自己喜欢的名字
+//但是,对于我们一些资源文件,如果有用到自定义view时候,应该把引用换掉嘛,所以这里的处理方法就是在build去替换我们的文件
+//对于应用标题也是可以这么干
+//但有一点奇怪的是,如果我们这里调用这段函数,下面添加任务时候就会报错,出现taskDependiences为Null的错误
+//这段代码好像没用啊啊啊啊啊啊
+
+//	android.applicationVariants.add { variant ->
+//		def buildType = variant.buildType
+//		def encoding = java.nio.charset.Charset.defaultCharset().toString()
+//		if (buildType.applicationIdSuffix) {
+//			def defaultPackageId = variant.packageName.replaceAll(buildType.applicationIdSuffix, '');
+//			variant.mergeResources.doLast {
+//				def dir = file("${buildDir}/intermediates/res/${variant.dirName}/layout")
+//				dir.listFiles().each { f ->
+//					String content = f.getText(encoding)
+//					content = content.replaceAll("res/" + defaultPackageId, "res/variant.packageName")
+//					f.write(centent, encoding)
+//
+//	           def f = file("${buildDir}/intermediates/res/${variant.dirName}/values/values.xml")
+//	           String content = f.getText(encoding)
+//	           content = content.replaceAll('来往', '来往Beta')
+//	           f.write(content, encoding)
+//				}
+//			}
+//		}
+//
+//	}
 }
+
 
 dependencies {
 	compile fileTree(dir: 'libs', include: ['*.jar'])
 	compile 'com.android.support:appcompat-v7:22.2.0'
 	compile 'com.android.support:support-v4:22.2.0'
 }
+
+//可以加入任务
+//添加了task:hello,由于不知道原来任务关系是怎样的,我们可以让hello任务依赖dx任务的所有依赖
+//再让dx任务依赖hello任务
+afterEvaluate{
+	android.applicationVariants.each{variant ->
+		def dx = tasks.findByName("dex${variant.name.capitalize()}")
+		def hello = "hello${variant.name.capitalize()}"
+		task(hello){
+			println "hello"
+		}
+		tasks.findByName(hello).dependsOn dx.taskDependencies.getDependencies(dx)
+        dx.dependsOn tasks.findByName(hello)
+	}
+}
+//取消任务
+tasks.whenTaskAdded { task ->
+	if(task.name.contains('AndroidTest')){
+		task.enabled = false
+	}
+}
+
+apply from: 'timeusing.gradle'
