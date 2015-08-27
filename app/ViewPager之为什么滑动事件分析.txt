@@ -83,6 +83,56 @@ setAdapter(PagerAdapter adapter):
            (4)显示当前currentItem;
               mAdapter.setPrimaryItem(ViewGroup container, int position, Object object)
            (5)若子view需要focus,会将focus传给child.
+第一个问题:一个View从在我们指定的时间内从一个位置滚动到另外一个位置，我们利用Scroller类可以实现匀速滚动，而不是瞬间的移动的效果.
+1. ViewCompat.postInvalidateOnAnimation(this) --> View.invalidate() --> view.draw();
+2.View.draw(Canvas canvas)
+         /*
+         * Draw traversal performs several drawing steps which must be executed
+         * in the appropriate order:
+         *
+         *      1. Draw the background
+         *      2. If necessary, save the canvas' layers to prepare for fading
+         *      3. Draw view's content
+         *      4. Draw children
+         *      5. If necessary, draw the fading edges and restore layers
+         *      6. Draw decorations (scrollbars for instance)
+         */
+3.draw children --> computeScroll
+                    判断computeScrollOffset 是否为true,如果是表示没有滑动到目标位置.调用scrollTo -->ViewCompat.postInvalidateOnAnimation();
+
+
+http://www.bubuko.com/infodetail-535920.html
+第二个问题:ViewPager是怎么实现预加载的,
+
+看看computeScroll():
+    @Override
+    public void computeScroll() {
+        if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
+            int oldX = getScrollX();
+            int oldY = getScrollY();
+            int x = mScroller.getCurrX();
+            int y = mScroller.getCurrY();
+
+            if (oldX != x || oldY != y) {
+                scrollTo(x, y);
+                if (!pageScrolled(x)) {
+                    mScroller.abortAnimation();
+                    scrollTo(0, y);
+                }
+            }
+
+            // Keep on drawing until the animation has finished.
+            ViewCompat.postInvalidateOnAnimation(this);
+            return;
+        }
+
+        // Done with scroll, clean up state.
+        completeScroll(true);
+    }
+mScroller.computeScrollOffset():告诉我们这时候在哪个位置,当我们到目标位置时候返回true;
+
+
+
 
 什么时候会触发onPagerStateChanged()
 1.当我们滑动到目标位置时候,这时候状态就是SCROLL_STATE_IDLE;
@@ -176,6 +226,8 @@ onInterceptTouchEvent()
                                         totalDelta);
             setCurrentItemInternal(nextPage, true, true, initialVelocity);
             //如果nextPage != currItem,就会调用OnPageSelected(),所以这个方法是在ACTION_UP调用.
+
+
 
 //这个方法只会在populate()这个方法中调用.
 ItemInfo addNewItem(int position,int index){

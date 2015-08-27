@@ -109,7 +109,7 @@ requestDisallowInterceptTouchEvent(boolean ):
 
 声明: dispatchTouchEvent = dte ;
       onTouchEvent = ote;
-      onTouch = ot;
+      onTouch = ot;shi
       onInterceptTouchEvent = oite;
 总结: ACTION_DOWN : 如果child dte = false,就会把后续事件(包括ACTION_DOWN)扔给parent处理,child 不处理ACTION_MOVE,ACTION_UP,ACTION_CANCEL逻辑
                    如果拦截了,就完全是parent处理了
