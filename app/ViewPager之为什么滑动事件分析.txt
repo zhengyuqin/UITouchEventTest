@@ -65,18 +65,6 @@ setAdapter(PagerAdapter adapter):
            final int endPos = Math.min(N-1, mCurItem + pageLimit);
            (2)在CacheList中找到newCurrentItem对应的位置,如果找不到重新addNewItem();
            这里会调用我们熟悉的adapter.instantiateItem();
-           ItemInfo addNewItem(int position, int index) {
-                   ItemInfo ii = new ItemInfo();
-                   ii.position = position;
-                   ii.object = mAdapter.instantiateItem(this, position);
-                   ii.widthFactor = mAdapter.getPageWidth(position);
-                   if (index < 0 || index >= mItems.size()) {
-                       mItems.add(ii);
-                   } else {
-                       mItems.add(index, ii);
-                   }
-                   return ii;
-               }
            (3)在CacheList中寻找前后view的位置,如果找不到,重新新建,并添加到CacheList中.
               不仅如此,还要把CacheList中没用的View删掉,就会调用adapter.destroyItem();
               最后,计算每一页的偏移量.
