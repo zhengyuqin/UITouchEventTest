@@ -45,7 +45,7 @@ public class ChildListViewFragment extends Fragment {
 		for (int i = 0; i < 20; i++) {
 			mList.add("text" + String.valueOf(i));
 		}
-		mListAdapter = new ListAdapter(getActivity(), mList);
+		//mListAdapter = new ListAdapter(getActivity(), mList);
 	}
 
 	@Override

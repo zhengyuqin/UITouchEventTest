@@ -23,7 +23,7 @@
         <!-- </intent-filter > -->
         <!-- </activity > -->
         <activity
-            android:name=".transition.TransitionActivity"
+            android:name=".animator.AnimPointActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,6 +76,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".animator.MainActivity" />
         </activity>
+
+        <activity android:name = ".transition.TransitionActivity"/>
+
+        <activity android:name = ".animator.AnimMainActivity"/>
     </application>
 
 </manifest>
