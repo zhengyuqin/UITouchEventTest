@@ -58,31 +58,23 @@ setAdapter(PagerAdapter adapter):
 
 2.填充视图:populate(int newCurrentItem);
            (1)计算要填充哪些视图,默认情况下填充视图前后1张;
-           mAdapter.startUpdate(this);
            final int pageLimit = mOffscreenPageLimit;
            final int startPos = Math.max(0, mCurItem - pageLimit);
            final int N = mAdapter.getCount();
            final int endPos = Math.min(N-1, mCurItem + pageLimit);
            (2)在CacheList中找到newCurrentItem对应的位置,如果找不到重新addNewItem();
            这里会调用我们熟悉的adapter.instantiateItem();
-           ItemInfo addNewItem(int position, int index) {
-                   ItemInfo ii = new ItemInfo();
-                   ii.position = position;
-                   ii.object = mAdapter.instantiateItem(this, position);
-                   ii.widthFactor = mAdapter.getPageWidth(position);
-                   if (index < 0 || index >= mItems.size()) {
-                       mItems.add(ii);
-                   } else {
-                       mItems.add(index, ii);
-                   }
-                   return ii;
-               }
            (3)在CacheList中寻找前后view的位置,如果找不到,重新新建,并添加到CacheList中.
               不仅如此,还要把CacheList中没用的View删掉,就会调用adapter.destroyItem();
               最后,计算每一页的偏移量.
-           (4)显示当前currentItem;
+           (4)这时候才显示当前currentItem;
               mAdapter.setPrimaryItem(ViewGroup container, int position, Object object)
            (5)若子view需要focus,会将focus传给child.
+           ViewPager通过这个预加载方式让系统能够界面滚动时候不卡顿，但有时候我们需要取消预加载，设置
+           setOffscreenPageLimit(0)是没有影响的，这篇文章setUserVisibleHint()入手
+           http://www.cnblogs.com/lee0oo0/p/3713391.html
+
+
 第一个问题:一个View从在我们指定的时间内从一个位置滚动到另外一个位置，我们利用Scroller类可以实现匀速滚动，而不是瞬间的移动的效果.
 1. ViewCompat.postInvalidateOnAnimation(this) --> View.invalidate() --> view.draw();
 2.View.draw(Canvas canvas)
@@ -153,18 +145,23 @@ onInterceptTouchEvent()
               }
           }
 2.在ACTION_MOVE过程中,
-     if (dx != 0 && !isGutterDrag(mLastMotionX, dx) &&
-                            canScroll(this, false, (int) dx, (int) x, (int) y)) {
-                        // Nested view has scrollable area under this point. Let it be handled there.
-                        mLastMotionX = x;
-                        mLastMotionY = y;
-                        mIsUnableToDrag = true;
-                        return false;
-                    }
-     mGutterSize 默认是16dp,表示这时候拖拽是ViewPager的两侧,取反就是指ViewPager的中间部位.
-      private boolean isGutterDrag(float x, float dx) {
-              return (x < mGutterSize && dx > 0) || (x > getWidth() - mGutterSize && dx < 0);
-          }
+             if (dx != 0 && !isGutterDrag(mLastMotionX, dx) &&
+                 canScroll(this, false, (int) dx, (int) x, (int) y)) {
+                 ....
+                 mIsUnableToDrag = true;
+                 return false;
+             }
+            canScroll()最后会调用View.canScrollHorizontally()
+            public boolean canScrollHorizontally(int direction) {
+                //offset = oldScrollX - newScrollX;
+                if (range == 0) return false;
+                if (direction < 0) {//表示右滑,这时的偏移量 offset > 0,表示该view是可滑动的,
+                    return offset > 0;
+                } else {
+                    return offset < range - 1;
+                }
+            }
+
 
       // 找到最里面的可滑动child,假设里面有个ScrollView,且ScrollView里面没有可以滑动的child时候,就直接检查ScrollView.canScrollHorizontally方法.
        protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
@@ -221,14 +218,24 @@ onInterceptTouchEvent()
                                      }
                                  }
      3.ACTION_UP:
-            就是决定显示下一页是哪页
-            int nextPage = determineTargetPage(currentPage, pageOffset, initialVelocity,
-                                        totalDelta);
-            setCurrentItemInternal(nextPage, true, true, initialVelocity);
-            //如果nextPage != currItem,就会调用OnPageSelected(),所以这个方法是在ACTION_UP调用.
+            if (mIsBeingDragged) {
+                ......//获得要切换的页面
+                int nextPage = determineTargetPage(currentPage, pageOffset, initialVelocity,
+                        totalDelta);
+                //这里实现页面切换
+                setCurrentItemInternal(nextPage, true, true, initialVelocity);
+　　　　　　　　　　　　......
+            }
 
 
-
+    void setCurrentItemInternal(int item, boolean smoothScroll, boolean
+        always, int velocity) {
+        ......决定onPageSelected是否调用
+        final boolean dispatchSelected = mCurItem != item;
+        ......填充视图，并滚动到目标位置
+        populate(item);
+        scrollToItem(item, smoothScroll, velocity, dispatchSelected);
+    }
 //这个方法只会在populate()这个方法中调用.
 ItemInfo addNewItem(int position,int index){
    ItemInfo ii = new ItemInfo();

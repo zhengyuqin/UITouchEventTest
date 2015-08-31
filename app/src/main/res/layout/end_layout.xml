@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff000000"
+    android:id="@+id/base"
+    tools:context ="com.zyq.uitoucheventtest.transition.TransitionActivity1">
+
+<ImageButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/btn1"
+    android:src="@drawable/shape1"
+    android:background="#00000000"
+    android:contentDescription="shape"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:onClick="changeScene"/>
+
+<ImageButton
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:id="@+id/btn2"
+android:src="@drawable/shape2"
+android:background="#00000000"
+android:contentDescription="shape"
+android:layout_alignParentLeft="true"
+android:layout_alignParentBottom="true"
+android:onClick="changeScene"/>
+
+<ImageButton
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:id="@+id/btn3"
+android:src="@drawable/shape3"
+android:background="#00000000"
+android:contentDescription="shape"
+android:layout_alignParentRight="true"
+android:layout_alignParentTop="true"
+android:onClick="changeScene"/>
+
+<ImageButton
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:id="@+id/btn4"
+android:src="@drawable/shape4"
+android:background="#00000000"
+android:contentDescription="shape"
+android:layout_alignParentLeft="true"
+android:layout_alignParentTop="true"
+android:onClick="changeScene"/>
+
+    </RelativeLayout>
