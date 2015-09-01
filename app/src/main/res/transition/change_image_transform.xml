@@ -1,0 +1,13 @@
+<!-- (see also Shared Transitions below) -->
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <explode />
+
+    <changeTransform />
+
+    <changeClipBounds />
+
+    <changeBounds />
+    <changeImageTransform />
+
+</transitionSet>

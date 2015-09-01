@@ -23,7 +23,7 @@
         <!-- </intent-filter > -->
         <!-- </activity > -->
         <activity
-            android:name=".animator.AnimPointActivity"
+            android:name=".AllActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,55 +31,64 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".animator.MainActivity"></activity>
-        <activity android:name=".transition.TransitionActivity1"></activity>
+        <activity android:name=".animator.ICSAddActivity"></activity>
         <activity
             android:name=".animator.CrossfadeActivity"
             android:label="@string/title_crossfade"
-            android:parentActivityName=".animator.MainActivity"
+            android:parentActivityName=".animator.ICSAddActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".animator.MainActivity" />
+                android:value=".animator.ICSAddActivity" />
         </activity>
         <activity
             android:name=".animator.CardFlipActivity"
             android:label="@string/title_card_flip"
-            android:parentActivityName=".animator.MainActivity"
+            android:parentActivityName=".animator.ICSAddActivity"
             android:theme="@style/DarkTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".animator.MainActivity" />
+                android:value=".animator.ICSAddActivity" />
         </activity>
         <activity
             android:name=".animator.ScreenSlideActivity"
             android:label="@string/title_screen_slide"
-            android:parentActivityName=".animator.MainActivity"
+            android:parentActivityName=".animator.ICSAddActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".animator.MainActivity" />
+                android:value=".animator.ICSAddActivity" />
         </activity>
         <activity
             android:name=".animator.ZoomActivity"
             android:label="@string/title_zoom"
-            android:parentActivityName=".animator.MainActivity" >
+            android:parentActivityName=".animator.ICSAddActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".animator.MainActivity" />
+                android:value=".animator.ICSAddActivity" />
         </activity>
         <activity
             android:name=".animator.LayoutChangesActivity"
             android:label="@string/title_layout_changes"
-            android:parentActivityName=".animator.MainActivity" >
+            android:parentActivityName=".animator.ICSAddActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".animator.MainActivity" />
+                android:value=".animator.ICSAddActivity" />
         </activity>
 
         <activity android:name = ".transition.TransitionActivity"/>
 
+        <activity android:name = ".animator.AnimPointActivity"/>
         <activity android:name = ".animator.AnimMainActivity"/>
+        <activity android:name = ".transition.LollipopActivity"/>
+        <activity android:name = ".transition.TouchActivity"/>
+        <activity android:name = ".transition.RevealActivity"/>
+        <activity android:name = ".transition.ActivityA"/>
+        <activity android:name = ".transition.ActivityB"/>
+        <activity android:name = ".transition.ShareActivity"
+                android:theme="@style/AppTheme"/>
+        <activity android:name = ".transition.ViewerActivity"
+                  android:theme="@style/ViewerTheme"/>
     </application>
 
 </manifest>

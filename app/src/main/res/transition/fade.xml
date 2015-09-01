@@ -1,0 +1,11 @@
+<!-- (see also Shared Transitions below) -->
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- 从边缘出入 -->
+    <!-- <slide /> -->
+    <!-- 从中心出入 -->
+    <!-- <explode /> -->
+    <!-- 淡入淡出 -->
+    <fade />
+
+</transitionSet>

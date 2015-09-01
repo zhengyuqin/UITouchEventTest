@@ -18,6 +18,7 @@ import com.zyq.uitoucheventtest.R;
 
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.Locale;
 
 
 public class AnimMainActivity extends ActionBarActivity {
@@ -49,9 +50,10 @@ public class AnimMainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_anim_main);
 		mTvAnimator = (TextView) findViewById(R.id.text);
 		mBtnAnimator = (Button) findViewById(R.id.btn);
+
 		final EnumSet<AnimatorType> currEnumSet = EnumSet.allOf(AnimatorType.class);
 		final Iterator<AnimatorType> iterator = currEnumSet.iterator();
 		mBtnAnimator.setOnClickListener(new View.OnClickListener() {
@@ -59,23 +61,20 @@ public class AnimMainActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				if (iterator.hasNext()) {
 					AnimatorType type = iterator.next();
-					mBtnAnimator.setText(type.name());
+					mBtnAnimator.setText(type.name().toLowerCase(Locale.getDefault()));
 					switch (type) {
-						case ValueAnimator:
-							animatorWithObject();
-							break;
 						case ObjectAnimator:
 							animatorWithObject();
 							break;
 						case AnimatorSet:
 							animatorWithSet();
 							break;
-						case AnimatorXml:
-							animatorWithXml();
-							break;
-						case AnimatorWithViewProperty:
-							animtorWithViewProperty();
-							break;
+//						case AnimatorXml:
+//							animatorWithXml();
+//							break;
+//						case AnimatorWithViewProperty:
+//							animatorWithViewProperty();
+//							break;
 						case AnimatorPoint:
 							Intent intent = new Intent(AnimMainActivity.this, AnimPointActivity.class);
 							startActivity(intent);
@@ -106,7 +105,7 @@ public class AnimMainActivity extends ActionBarActivity {
 
 		AnimatorSet animSet = new AnimatorSet();
 		animSet.play(rotate).with(fadeInOut).after(moveIn);
-		animSet.setDuration(5000);
+		animSet.setDuration(3000);
 		animSet.start();
 	}
 
@@ -116,15 +115,15 @@ public class AnimMainActivity extends ActionBarActivity {
 		animator.start();
 	}
 
-	private void animtorWithViewProperty() {
+	private void animatorWithViewProperty() {
 		mTvAnimator.animate().x(getWindow().getDecorView().getWidth()/2).y(getWindow().getDecorView().getHeight()).
 				setInterpolator(new AccelerateInterpolator()).setDuration(4000);
 	}
 
 	public enum AnimatorType {
 
-		ValueAnimator(1), ObjectAnimator(2), AnimatorSet(3), AnimatorXml(4), AnimatorWithViewProperty(5),
-		AnimatorPoint(6);
+		ObjectAnimator(1), AnimatorSet(2),
+		AnimatorPoint(3);
 
 		private int nType;
 

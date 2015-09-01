@@ -28,36 +28,17 @@ import android.view.View;
 
 import com.zyq.uitoucheventtest.R;
 
-/**
- * This sample demonstrates cross-fading between two overlapping views.
- *
- * <p>In this sample, the two overlapping views are a loading indicator and some text content. The
- * active view is toggled by touching the toggle button in the action bar. In real-world
- * applications, this toggle would occur as soon as content was available. Note that if content is
- * immediately available, a loading spinner shouldn't be presented and there should be no
- * animation.</p>
- */
+
 public class CrossfadeActivity extends Activity {
-    /**
-     * The flag indicating whether content is loaded (text is shown) or not (loading spinner is
-     * shown).
-     */
+
     private boolean mContentLoaded;
 
-    /**
-     * The view (or view group) containing the content. This is one of two overlapping views.
-     */
+
     private View mContentView;
 
-    /**
-     * The view containing the loading indicator. This is the other of two overlapping views.
-     */
+
     private View mLoadingView;
 
-    /**
-     * The system "short" animation time duration, in milliseconds. This duration is ideal for
-     * subtle animations or animations that occur very frequently.
-     */
     private int mShortAnimationDuration;
 
     @Override
@@ -88,7 +69,7 @@ public class CrossfadeActivity extends Activity {
             case android.R.id.home:
                 // Navigate "up" the demo structure to the launchpad activity.
                 // See http://developer.android.com/design/patterns/navigation.html for more.
-                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+                NavUtils.navigateUpTo(this, new Intent(this, ICSAddActivity.class));
                 return true;
 
             case R.id.action_toggle:
@@ -109,16 +90,11 @@ public class CrossfadeActivity extends Activity {
         final View showView = contentLoaded ? mContentView : mLoadingView;
         final View hideView = contentLoaded ? mLoadingView : mContentView;
 
-        // Set the "show" view to 0% opacity but visible, so that it is visible
-        // (but fully transparent) during the animation.
+
         showView.setAlpha(0f);
         showView.setVisibility(View.VISIBLE);
 
-        // Animate the "show" view to 100% opacity, and clear any animation listener set on
-        // the view. Remember that listeners are not limited to the specific animation
-        // describes in the chained method calls. Listeners are set on the
-        // ViewPropertyAnimator object for the view, which persists across several
-        // animations.
+
         showView.animate()
                 .alpha(1f)
                 .setDuration(mShortAnimationDuration)

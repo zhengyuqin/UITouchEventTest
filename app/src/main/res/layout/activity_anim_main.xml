@@ -8,21 +8,26 @@
                 android:paddingBottom = "@dimen/activity_vertical_margin"
                 tools:context = ".MainActivity" >
 
-    <Button android:id="@+id/btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="animator"
-            android:layout_alignParentTop="true"
-            android:minHeight="50dp"
-            android:gravity="center"/>
-    <TextView
-            android:id="@+id/text"
-            android:text = "Property Animation"
-            android:layout_width = "wrap_content"
-            android:layout_height = "wrap_content"
-            android:layout_centerInParent="true"
-            android:minHeight="40dp"
-            android:gravity="center"
-            android:textSize="24sp"/>
+	<Button android:id = "@+id/btn"
+	        android:layout_width = "wrap_content"
+	        android:layout_height = "wrap_content"
+	        android:text = "animator"
+	        android:layout_alignParentTop = "true"
+	        android:minHeight = "50dp"
+	        android:gravity = "center"
+	        android:textColor = "@android:color/holo_red_dark"
+	        android:textSize = "18sp"
+	        android:padding = "10dp"
+	        android:paddingLeft = "20dp"
+	        android:paddingRight = "20dp" />
+	<TextView
+			android:id = "@+id/text"
+			android:text = "Property Animation"
+			android:layout_width = "wrap_content"
+			android:layout_height = "wrap_content"
+			android:layout_centerInParent = "true"
+			android:minHeight = "40dp"
+			android:gravity = "center"
+			android:textSize = "24sp" />
 
 </RelativeLayout >

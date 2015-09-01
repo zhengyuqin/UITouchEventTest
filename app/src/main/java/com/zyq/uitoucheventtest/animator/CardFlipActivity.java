@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.zyq.uitoucheventtest.R;
 
@@ -98,7 +97,7 @@ public class CardFlipActivity extends Activity
             case android.R.id.home:
                 // Navigate "up" the demo structure to the launchpad activity.
                 // See http://developer.android.com/design/patterns/navigation.html for more.
-                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+                NavUtils.navigateUpTo(this, new Intent(this, ICSAddActivity.class));
                 return true;
 
             case R.id.action_flip:
